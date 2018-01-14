@@ -28,22 +28,22 @@ should point to your own heartbeat instance. By default, it points to
 `https://serwer1598662.home.pl/heartbeat/`, which is the public instance.
 
 *Note that the public instance employs additional logging and protections
-agains possible scanning and/or other malicious behavior.*
+against possible scanning and/or other malicious behavior.*
 
 #### Monitoring and alerting
 
 You can use any monitoring solution, either internal (eg. Nagios, Zabbix,
 PRTG) or external (eg. Uptimerobot, Pingdom, Statuscake), that can perform
-https keyword monitoring (send https requests and check the response
-for the defined keyword).
+https keyword monitoring (send https requests and check the response for
+existence of the defined keyword).
 
-Example heartbeat URL for MySQL instance on server.yourdomain.com server:
+Example heartbeat URL for MySQL instance on *server.yourdomain.com* server:
 
 ```
 https://serwer1598662.home.pl/heartbeat/query.php?id=mysql_server_yourdomain_com
 ```
 
-and your monitoring sensor should check for "ALIVE" keyword in the response.
+and your monitoring sensor should check for `ALIVE` keyword in the response.
 
 
 
