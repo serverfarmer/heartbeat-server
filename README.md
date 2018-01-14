@@ -8,31 +8,32 @@ with PHP 5.x or 7.x (any version should work), but without access to
 memcached, redis or any other caching mechanism.
 
 
+
 ## How to use
 
 #### Feeding data
 
-You just have to install *sf-monitoring-heartbeat* extension on your
+You just have to install **sf-monitoring-heartbeat** extension on your
 server(s):
 
 ```
 /opt/farm/scripts/setup/extension.sh sf-monitoring-heartbeat
 ```
 
-Or you can add if to `.default.extensions` file in your forked Server
+Or you can add id to `.default.extensions` file in your forked Server
 Farmer repository, to cause installing it automatically on all servers.
 
-Next, check `functions.custom` file for `heartbeat_url` function. It
-should point to your heartbeat instance. By default, it points to
-https://serwer1598662.home.pl/heartbeat/, which is the public instance.
+Next, check `heartbeat_url` function in `functions.custom` file. It
+should point to your own heartbeat instance. By default, it points to
+`https://serwer1598662.home.pl/heartbeat/`, which is the public instance.
 
 *Note that the public instance employs additional logging and protections
 agains possible scanning and/or other malicious behavior.*
 
 #### Monitoring and alerting
 
-You can use any monitoring solution, either internal (like eg. Nagios)
-or external (eg. Uptimerobot, Pingdom, Statuscake), that can perform
+You can use any monitoring solution, either internal (eg. Nagios, Zabbix,
+PRTG) or external (eg. Uptimerobot, Pingdom, Statuscake), that can perform
 https keyword monitoring (send https requests and check the response
 for the defined keyword).
 
@@ -42,7 +43,7 @@ Example heartbeat URL for MySQL instance on server.yourdomain.com server:
 https://serwer1598662.home.pl/heartbeat/query.php?id=mysql_server_yourdomain_com
 ```
 
-and the monitoring system should check for "ALIVE" keyword in the response.
+and your monitoring sensor should check for "ALIVE" keyword in the response.
 
 
 
