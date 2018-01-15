@@ -25,7 +25,7 @@ Farmer repository, to cause installing it automatically on all servers.
 
 Next, check `heartbeat_url` function in `functions.custom` file. It
 should point to your own heartbeat instance. By default, it points to
-`https://serwer1598662.home.pl/heartbeat/`, which is the public instance.
+`https://serverfarmer.home.pl/heartbeat/`, which is the public instance.
 
 *Note that the public instance employs additional logging and protections
 against possible scanning and/or other malicious behavior.*
@@ -40,7 +40,7 @@ existence of the defined keyword).
 Example heartbeat URL for MySQL instance on *server.yourdomain.com* server:
 
 ```
-https://serwer1598662.home.pl/heartbeat/query.php?id=mysql_server_yourdomain_com
+https://serverfarmer.home.pl/heartbeat/query.php?id=mysql_server_yourdomain_com
 ```
 
 and your monitoring sensor should check for `ALIVE` keyword in the response.
