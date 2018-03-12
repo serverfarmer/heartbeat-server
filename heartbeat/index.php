@@ -25,7 +25,7 @@ if (empty($_GET["host"]) || empty($_GET["services"]))
 	die("missing parameters");
 
 $ret1 = preg_match("/^([a-zA-Z0-9.\-]+)$/", $_GET["host"], $out1);
-$ret2 = preg_match("/^([a-z0-9,]+)$/", $_GET["services"], $out2);
+$ret2 = preg_match("/^([a-z0-9,\-]+)$/", $_GET["services"], $out2);
 
 if (!$ret1 || !$ret2)
 	die("missing parameters");
