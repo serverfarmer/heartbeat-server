@@ -65,7 +65,7 @@ Note that you can use different addresses for reporting data from monitored host
 
 ## Compatibility
 
-Heartbeat server requires PHP 5.x or later, and is 100% compatible with PHP 7.x. It doesn't have any dependencies (eg. memcached, Redis, specific libraries or frameworks), however for maximum performance, `files` subdirectory should be mounted as `tmpfs` (see Installation section above).
+Heartbeat server requires PHP 5.2 or later, and is 100% compatible with PHP 7.x. It doesn't have any dependencies (eg. memcached, Redis, specific libraries or frameworks), however for maximum performance, `files` subdirectory should be mounted as `tmpfs` (see Installation section above).
 
 
 ## How to contribute
