@@ -1,50 +1,71 @@
-This repository contains reference implementation of Heartbeat server
-used by Server Farmer.
+## Overview
+
+Heartbeat is a Server Farmer subproject, that extends functionally of your existing monitoring/alerting solution by providing abilities to monitor network services, Docker containers, virtual machines, condition of hard drives and many other aspects of a Linux server.
+
+Heartbeat is divided into [client](https://github.com/serverfarmer/heartbeat-linux) and server parts. Client part is responsible for collecting data and sending reports every 2 minutes to server. Server part is responsible for storing information about each reported service and responding to queries from your monitoring/alerting solution, if this particular service is (still) alive or not.
+
+Heartbeat can work with any monitoring/alerting system, that supports http(s) keyword monitoring, including:
+- public: StatusCake, Uptimerobot, Pingdom etc.
+- local: Nagios, Icinga, Zabbix, PRTG etc.
+
+
+## Installation
+
+Client part is either installed manually or automatically by Server Farmer  - installation process is described in [heartbeat-linux repository](https://github.com/serverfarmer/heartbeat-linux).
+
+Server part is installed on webserver with PHP support. Version provided in this repository (the whole `heartbeat` subdirectory) can be just put into htdocs directory. It doesn't require memcached or any other dependencies, instead is uses `files` subdirectory to store temporary files - to ensure high performance, you should put this subdirectory name into `/etc/fstab` file, eg.:
+
+`tmpfs /var/www/html/heartbeat/files tmpfs noatime,size=512m 0 0`
+
+then mount it (by executing `mount /var/www/html/heartbeat/files`) and put into vhost configuration:
+
+```
+<Directory /var/www/html/heartbeat/files>
+    Order deny,allow
+    Deny from all
+</Directory>
+```
+
+**If you don't care about high performance, or SSD drives health, you can skip fstab/vhost configuration** - just copying `heartbeat` subdirectory to your hosting directory is perfectly enough to make it work.
+
+
+## How it works
+
+Server part receives 2 types of requests:
+
+- reports from monitored hosts (handled by `index.php` file), containing the hostname and a list of detected services - such reports are send by each host every 2 minutes and reported services are considered alive for 270 seconds since last report (you can adjust this time, also per service name)
+- queries from monitoring/alerting solution (handled by `query.php` file), separately for each monitored host and service - and replies with either `ALIVE` or `DEAD` keyword
+
+So, Heartbeat server is in fact just a kind of dumb proxy between monitored servers and your monitoring/alerting solution. All checks, as well as related logic (eg. list of notified people for each check) should be created directly in your monitoring/alerting solution (which does not even need to be accessible from monitored servers).
+
+
+## Query URL format
+
+Assuming that:
+- your Heartbeat server has address `http://heartbeat.yourdomain.com/heartbeat/`
+- your example monitored host has hostname `yourserver.yourdomain.com`
+
+this is the complete URL that checks for `ssh` service running on this host:
+
+`http://heartbeat.yourdomain.com/heartbeat/query.php?id=ssh_yourserver_yourdomain_com`
+
+Rules:
+- everything is converted to lowercase
+- underlines, colons and slashes are replaced with dashes
+- dots in hostnames are replaced with underlines
+- network service names are listed in `/opt/heartbeat/scripts/checks/services.sh` script
+
+
+## Performance
+
+Single AWS `t2.micro` instance, storing temporary files on `tmpfs` filesystem, can handle over 3000 individual checks without any performance issues, assuming that queries from monitoring system are done via http (no encryption), every 1 minute.
+
+Note that you can use different addresses for reporting data from monitored hosts, and for querying (in particular, you can use https for reporting and http for querying over internal network).
+
 
 ## Compatibility
 
-This version is meant for installing on shared hosting environments,
-with PHP 5.x or 7.x (any version should work), but without access to
-memcached, redis or any other caching mechanism.
-
-
-
-## How to use
-
-#### Feeding data
-
-You just have to install **sf-monitoring-heartbeat** extension on your
-server(s):
-
-```
-/opt/farm/scripts/setup/extension.sh sf-monitoring-heartbeat
-```
-
-Or you can add id to `.default.extensions` file in your forked Server
-Farmer repository, to cause installing it automatically on all servers.
-
-Next, check `heartbeat_url` function in `functions.custom` file. It
-should point to your own heartbeat instance. By default, it points to
-`https://serverfarmer.home.pl/heartbeat/`, which is the public instance.
-
-*Note that the public instance employs additional logging and protections
-against possible scanning and/or other malicious behavior.*
-
-#### Monitoring and alerting
-
-You can use any monitoring solution, either internal (eg. Nagios, Zabbix,
-PRTG) or external (eg. Uptimerobot, Pingdom, Statuscake), that can perform
-https keyword monitoring (send https requests and check the response for
-existence of the defined keyword).
-
-Example heartbeat URL for MySQL instance on *server.yourdomain.com* server:
-
-```
-https://serverfarmer.home.pl/heartbeat/query.php?id=mysql_server_yourdomain_com
-```
-
-and your monitoring sensor should check for `ALIVE` keyword in the response.
-
+Heartbeat server requires PHP 5.x or later, and is 100% compatible with PHP 7.x. It doesn't have any dependencies (eg. memcached, Redis, specific libraries or frameworks), however for maximum performance, `files` subdirectory should be mounted as `tmpfs` (see Installation section above).
 
 
 ## How to contribute
@@ -56,6 +77,7 @@ If you want to contribute:
 - fork this repository and clone it to your machine
 - create a feature branch and do the change inside it
 - push your feature branch to github and create a pull request
+
 
 ## License
 
